@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Từ bỏ thói quen dựa dẫm, ỷ lại</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#081426;--bg2:#0e2f55;--teal:#2dd4bf;--amber:#fbbf24;--rose:#fb7185;--text:#f1f5f9;--muted:#a3b6cf;--line:rgba(255,255,255,.15)}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;overflow:hidden;background:#050d1a;color:var(--text);font-family:'Be Vietnam Pro',system-ui,-apple-system,'Segoe UI',sans-serif}
+#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center;overflow:hidden;background:linear-gradient(135deg,var(--bg),var(--bg2) 60%,#0b4252);box-shadow:0 0 80px rgba(0,0,0,.6)}
+#stage:before{content:"";position:absolute;inset:0;background:radial-gradient(900px 600px at 85% 15%,rgba(45,212,191,.14),transparent),radial-gradient(800px 600px at 10% 95%,rgba(251,191,36,.1),transparent)}
+#fx{position:absolute;inset:0;pointer-events:none;z-index:5}
+/* gate */
+#gate{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--bg),var(--bg2));transition:opacity .8s,transform .8s,filter .8s}
+#gate.out{opacity:0;transform:scale(1.15);filter:blur(12px);pointer-events:none}
+.box{background:rgba(255,255,255,.07);border:1px solid var(--line);backdrop-filter:blur(14px);border-radius:28px;padding:46px 38px;text-align:center;width:420px;animation:rise .9s both}
+.lk{width:84px;height:84px;margin:0 auto 18px}
+.box h2{font-size:26px;margin-bottom:6px}.box p{color:var(--muted);font-size:14px;margin-bottom:22px}
+.box input{width:100%;padding:14px;border-radius:14px;border:1px solid var(--line);background:rgba(0,0,0,.3);color:var(--text);font:inherit;font-size:22px;text-align:center;letter-spacing:8px;outline:none}
+.box input:focus{border-color:var(--teal);box-shadow:0 0 0 4px rgba(45,212,191,.2)}
+.btn{margin-top:16px;width:100%;padding:14px;border:0;border-radius:14px;background:linear-gradient(90deg,var(--teal),var(--amber));color:#081426;font:inherit;font-weight:800;font-size:16px;cursor:pointer}
+.err{height:20px;margin-top:10px;color:var(--rose);font-size:13px}
+.shake{animation:shake .45s}
+@keyframes shake{25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
+/* slides */
+#deck{display:none;position:absolute;inset:0;cursor:pointer}
+.slide{position:absolute;inset:0;display:none;align-items:center;gap:90px;padding:0 150px}
+.slide.rev{flex-direction:row-reverse}
+.slide.on{display:flex;z-index:2}
+.slide.off{display:flex;z-index:1;animation:fo .6s forwards}
+@keyframes fo{to{opacity:0}}
+.on[data-t=z]{animation:tz .9s cubic-bezier(.2,.8,.2,1) both}
+.on[data-t=l]{animation:tl .9s cubic-bezier(.2,.8,.2,1) both}
+.on[data-t=u]{animation:tu .9s cubic-bezier(.2,.8,.2,1) both}
+.on[data-t=f]{animation:tf 1s cubic-bezier(.2,.8,.2,1) both}
+.on[data-t=c]{animation:tc 1.1s ease both}
+.on[data-t=b]{animation:tb .9s ease both}
+.on[data-t=d]{animation:td 1s ease both}
+.on[data-t=r]{animation:tr .9s cubic-bezier(.2,.8,.2,1) both}
+@keyframes tz{from{opacity:0;transform:scale(.7)}}
+@keyframes tl{from{opacity:0;transform:translateX(420px)}}
+@keyframes tu{from{opacity:0;transform:translateY(300px)}}
+@keyframes tf{from{opacity:0;transform:perspective(1600px) rotateY(-80deg)}}
+@keyframes tc{from{clip-path:circle(0 at 50% 50%)}to{clip-path:circle(80% at 50% 50%)}}
+@keyframes tb{from{opacity:0;filter:blur(40px);transform:scale(1.15)}}
+@keyframes td{from{clip-path:polygon(0 0,0 0,0 100%,0 100%)}to{clip-path:polygon(0 0,130% 0,100% 100%,0 100%)}}
+@keyframes tr{from{opacity:0;transform:rotate(-10deg) scale(.75)}}
+.it{opacity:0}
+.on .it{animation:rise .9s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*.16s + .5s)}
+@keyframes rise{from{opacity:0;transform:translateY(46px) scale(.96)}to{opacity:1;transform:none}}
+.wd{display:inline-block;opacity:0;transform:translateY(70%) rotate(5deg);filter:blur(8px)}
+.on .wd{animation:wd .8s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--d)*.07s + .5s)}
+@keyframes wd{to{opacity:1;transform:none;filter:none}}
+.txt{flex:1}
+.tag{display:flex;align-items:center;gap:14px;color:var(--teal);font-weight:600;letter-spacing:4px;text-transform:uppercase;font-size:22px;margin-bottom:26px}
+.tag:before{content:"";width:50px;height:3px;background:var(--teal)}
+h1,h2{font-weight:800;line-height:1.18}
+h1{font-size:92px}h2{font-size:66px}
+.hl .wd{background:linear-gradient(90deg,var(--teal),var(--amber));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{font-size:30px;color:var(--muted);line-height:1.6;margin-top:34px;max-width:860px}
+.art{flex:0 0 700px;height:700px}
+.art svg{width:100%;height:100%;overflow:visible}
+svg{--t:#2dd4bf;--a:#fbbf24;--r:#fb7185}
+.s{fill:none;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+.sp1{transform-origin:200px 200px;animation:sp 24s linear infinite}
+.sp2{transform-origin:200px 200px;animation:sp 16s linear infinite reverse}
+.sp3{transform-origin:200px 200px;animation:sp 10s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.fl{stroke-dasharray:6 12;animation:fl 1s linear infinite}
+@keyframes fl{to{stroke-dashoffset:-18}}
+.on .dr{stroke-dasharray:var(--l,500);stroke-dashoffset:var(--l,500);animation:dr 1.6s calc(var(--d,0)*.3s + .6s) forwards}
+@keyframes dr{to{stroke-dashoffset:0}}
+.po{opacity:0;transform-box:fill-box;transform-origin:center}
+.on .po{animation:po .7s calc(var(--d,0)*.14s + .6s) both cubic-bezier(.3,1.6,.5,1)}
+@keyframes po{from{opacity:0;transform:scale(0)}to{opacity:1;transform:none}}
+.gr{opacity:0;transform-box:fill-box;transform-origin:left center}
+.on .gr{animation:gr .6s calc(var(--d,0)*.3s + .8s) both}
+@keyframes gr{from{opacity:1;transform:scaleX(0)}to{opacity:1;transform:none}}
+.mv{opacity:0}.on .mv{animation:vis .01s .5s both}
+@keyframes vis{to{opacity:1}}
+.on .gone{transform-box:fill-box;transform-origin:center;animation:bf 1.2s calc(var(--d)*.1s + 1.6s) forwards ease-in}
+@keyframes bf{to{transform:translateY(190px) rotate(var(--r));opacity:0}}
+.press{animation:press 1.2s ease-in-out infinite}
+@keyframes press{50%{transform:translateY(14px)}}
+.on .lh{animation:lh .9s 2.2s cubic-bezier(.3,1.4,.5,1) forwards}
+.on .rh{animation:rh .9s 2.2s cubic-bezier(.3,1.4,.5,1) forwards}
+@keyframes lh{to{transform:translateX(-34px)}}@keyframes rh{to{transform:translateX(34px)}}
+.pulse{transform-box:fill-box;transform-origin:center;animation:pl 2.4s ease-out infinite}
+@keyframes pl{from{transform:scale(.6);opacity:.8}to{transform:scale(1.5);opacity:0}}
+.ven1{transform:translateX(-70px)}.ven2{transform:translateX(70px)}
+.on .ven1,.on .ven2{animation:ven 1.4s .8s cubic-bezier(.3,1.2,.5,1) forwards}
+@keyframes ven{to{transform:none}}
+.on .beam{animation:bm 1.6s .8s cubic-bezier(.3,1.3,.5,1) forwards}
+.on .pl1{animation:p1 1.6s .8s cubic-bezier(.3,1.3,.5,1) forwards}
+.on .pl2{animation:p2 1.6s .8s cubic-bezier(.3,1.3,.5,1) forwards}
+.beam{transform-origin:200px 120px}
+@keyframes bm{to{transform:rotate(-6deg)}}@keyframes p1{to{transform:translateY(15px)}}@keyframes p2{to{transform:translateY(-15px)}}
+.on .st{animation:st .7s calc(var(--d)*.2s + .6s) both cubic-bezier(.3,1.4,.5,1)}
+.st{transform-box:fill-box;transform-origin:bottom;opacity:0}
+@keyframes st{from{opacity:0;transform:scaleY(0)}to{opacity:1;transform:none}}
+.wave{transform-box:fill-box;transform-origin:left;animation:wv 1s ease-in-out infinite alternate}
+@keyframes wv{to{transform:skewY(10deg) scaleX(.85)}}
+.hand{transform-origin:80px 85px;animation:sp 3s linear infinite}
+.scan{animation:scan 2.4s ease-in-out infinite alternate}
+@keyframes scan{to{transform:translate(40px,30px)}}
+.blink{animation:bk 1.2s infinite}.blink:nth-of-type(2){animation-delay:.3s}.blink:nth-of-type(3){animation-delay:.6s}
+@keyframes bk{50%{opacity:.2}}
+.col{flex-direction:column;justify-content:center;align-items:flex-start;gap:20px}
+.cards{display:flex;gap:28px;margin-top:40px;width:100%}
+.b{flex:1;padding:26px;border-radius:26px;background:rgba(255,255,255,.07);border:1px solid var(--line);opacity:0;height:500px}
+.b svg{width:100%;height:190px}
+.b h3{font-size:34px;color:var(--amber);margin:14px 0 10px}
+.b p{font-size:24px;color:var(--muted);line-height:1.5}
+.b.in[data-e=l]{animation:bl .9s cubic-bezier(.2,.8,.2,1) both}
+.b.in[data-e=u]{animation:tu2 .9s cubic-bezier(.2,.8,.2,1) both}
+.b.in[data-e=r]{animation:br .9s cubic-bezier(.2,.8,.2,1) both}
+.b.in[data-e=z]{animation:bz .9s cubic-bezier(.3,1.5,.5,1) both}
+@keyframes bl{from{opacity:0;transform:translateX(-200px) rotate(-6deg)}to{opacity:1;transform:none}}
+@keyframes tu2{from{opacity:0;transform:translateY(200px)}to{opacity:1;transform:none}}
+@keyframes br{from{opacity:0;transform:translateX(200px) rotate(6deg)}to{opacity:1;transform:none}}
+@keyframes bz{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:none}}
+.b.in .gw{transform-box:fill-box;transform-origin:bottom;animation:gw 1s .4s both}
+@keyframes gw{from{transform:scaleY(0)}}
+.cen{justify-content:center;text-align:center;flex-direction:column;gap:0}
+.cen .rings{position:absolute;left:50%;top:50%;width:900px;height:900px;margin:-450px 0 0 -450px}
+.cen h1{position:relative;font-size:104px}
+.shim{background:linear-gradient(90deg,var(--teal),var(--amber),var(--rose),var(--teal));background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shm 5s linear infinite}
+@keyframes shm{to{background-position:300% 0}}
+#bar{display:none;position:fixed;left:0;bottom:0;height:4px;width:0;background:linear-gradient(90deg,var(--teal),var(--amber));z-index:20;transition:width .6s;box-shadow:0 0 12px var(--teal)}
+#cnt{position:fixed;right:18px;bottom:12px;color:var(--muted);font-size:13px;z-index:20;display:none}
+#fsb{position:fixed;left:14px;bottom:12px;width:34px;height:34px;padding:7px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.08);z-index:20;display:none;cursor:pointer;opacity:.45;transition:opacity .3s,background .3s}
+#fsb:hover{opacity:1;background:rgba(45,212,191,.35)}
+#fsb svg{width:100%;height:100%;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2dd4bf"/><stop offset="1" stop-color="#fbbf24"/></linearGradient>
+<symbol id="pp" viewBox="0 0 40 60"><circle cx="20" cy="12" r="10"/><path d="M4 58v-14a16 16 0 0 1 32 0v14z"/></symbol>
+</defs></svg>
+
+<div id="gate"><div class="box" id="box">
+<svg class="lk" viewBox="0 0 80 80"><circle cx="40" cy="40" r="36" fill="none" stroke="#2dd4bf" stroke-width="2" stroke-dasharray="6 8" class="sp1" style="transform-origin:40px 40px"/><path d="M26 38v-8a14 14 0 0 1 28 0v8" fill="none" stroke="#fbbf24" stroke-width="4" stroke-linecap="round"/><rect x="20" y="38" width="40" height="26" rx="6" fill="url(#gg)"/><circle cx="40" cy="50" r="4" fill="#081426"/><path d="M40 52v6" stroke="#081426" stroke-width="3" stroke-linecap="round"/></svg>
+<h2>Nhập mật khẩu</h2><p>Vui lòng nhập mật khẩu để xem bài thuyết trình</p>
+<input id="pw" type="password" inputmode="numeric" autocomplete="off" placeholder="••" autofocus>
+<button class="btn" id="go">Mở bài trình chiếu</button><div class="err" id="err"></div>
+</div></div>
+
+<div id="stage"><canvas id="fx" width="1920" height="1080"></canvas>
+<div id="deck">
+
+<section class="slide" data-t="z"><div class="txt"><div class="tag it" style="--i:0">Bài thuyết trình</div><h1 class="sp hl">Từ bỏ thói quen dựa dẫm, ỷ lại</h1><p class="sub it" style="--i:8">Sự ỷ lại đang âm thầm kìm hãm sự phát triển của mỗi cá nhân và làm giảm chất lượng tập thể.</p></div>
+<div class="art"><svg viewBox="0 0 400 400"><g class="sp1"><circle cx="200" cy="200" r="185" class="s" stroke="#2dd4bf" stroke-width="2" stroke-dasharray="8 14"/><circle cx="200" cy="15" r="10" fill="#2dd4bf"/></g><g class="sp2"><circle cx="200" cy="200" r="135" class="s" stroke="#fbbf24" stroke-width="2" stroke-dasharray="3 10"/><circle cx="200" cy="65" r="8" fill="#fbbf24"/></g><g class="sp3"><circle cx="200" cy="200" r="88" class="s" stroke="#fff" stroke-opacity=".3" stroke-width="2"/><circle cx="200" cy="112" r="6" fill="#fb7185"/></g><circle cx="200" cy="200" r="58" fill="url(#gg)"/><use href="#pp" x="178" y="168" width="44" height="66" fill="#081426"/></svg></div></section>
+
+<section class="slide rev" data-t="l"><div class="txt"><div class="tag it" style="--i:0">Mở đầu</div><h2 class="sp hl">Không ít người trong chúng ta quen trông chờ vào người khác</h2><p class="sub it" style="--i:9">Chờ bạn chép bài hộ, chờ người khác giải quyết việc nhóm, nhờ vả cả những việc nằm trong khả năng của bản thân.</p></div>
+<div class="art"><svg viewBox="0 0 400 400"><circle cx="200" cy="170" r="70" fill="#fbbf24" opacity=".15" class="pulse"/><path class="s fl" stroke="#2dd4bf" d="M50 300 Q90 230 170 205"/><path class="s fl" stroke="#2dd4bf" d="M140 330 Q170 260 190 215"/><path class="s fl" stroke="#2dd4bf" d="M260 330 Q230 260 210 215"/><path class="s fl" stroke="#2dd4bf" d="M350 300 Q310 230 230 205"/><use class="po" href="#pp" x="165" y="90" width="70" height="105" fill="#fbbf24" style="--d:0"/><use class="po" href="#pp" x="25" y="300" width="42" height="63" fill="#2dd4bf" style="--d:2"/><use class="po" href="#pp" x="120" y="325" width="42" height="63" fill="#2dd4bf" style="--d:3"/><use class="po" href="#pp" x="238" y="325" width="42" height="63" fill="#2dd4bf" style="--d:4"/><use class="po" href="#pp" x="333" y="300" width="42" height="63" fill="#2dd4bf" style="--d:5"/></svg></div></section>
+
+<section class="slide" data-t="u"><div class="txt"><div class="tag it" style="--i:0">Mở đầu</div><h2 class="sp hl">Chính mình cũng từng muốn “đi đường tắt”</h2><p class="sub it" style="--i:8">Ngại khó mà dựa vào người khác thì nhanh thật. Nhưng càng lớn, mình càng nhận ra cái giá của nó.</p></div>
+<div class="art"><svg viewBox="0 0 400 400"><path class="s" stroke="#a3b6cf" stroke-opacity=".6" d="M40 350 C40 190 230 380 200 220 S380 280 360 50" stroke-dasharray="1 0"/><path class="s fl" stroke="#fbbf24" d="M40 350 L360 50"/><path class="s" stroke="#fb7185" d="M360 50V10"/><path d="M360 10l36 12-36 12z" fill="#fb7185" class="wave"/><circle class="mv" r="11" fill="#a3b6cf"><animateMotion id="m1" dur="6s" begin="indefinite" fill="freeze" path="M40 350 C40 190 230 380 200 220 S380 280 360 50"/></circle><circle class="mv" r="13" fill="#fbbf24"><animateMotion dur="3s" begin="indefinite" fill="freeze" path="M40 350 L360 50"/></circle><text x="200" y="182" text-anchor="middle" fill="#fbbf24" font-size="24" font-weight="600" transform="rotate(-43 200 200)">đường tắt</text><circle cx="60" cy="392" r="8" fill="#fbbf24"/><text x="78" y="399" fill="#a3b6cf" font-size="20">đường tắt</text><circle cx="220" cy="392" r="8" fill="#a3b6cf"/><text x="238" y="399" fill="#a3b6cf" font-size="20">tự đi đường dài</text></svg></div></section>
+
+<section class="slide rev" data-t="r"><div class="txt"><div class="tag it" style="--i:0">Mở đầu</div><h2 class="sp hl">Càng lớn, mình càng nhận ra sự ỷ lại kìm hãm sự phát triển</h2><p class="sub it" style="--i:10">Nó âm thầm làm giảm chất lượng tập thể. Vì vậy hôm nay mình muốn thuyết phục các bạn cùng suy ngẫm và từ bỏ thói quen này.</p></div>
+<div class="art"><svg viewBox="0 0 400 400"><path class="s" stroke="#a3b6cf" d="M30 350H370"/><path class="s dr" style="--l:420" stroke="#2dd4bf" d="M40 340C100 330 150 260 200 200S270 130 280 115"/><circle class="po" cx="280" cy="114" r="10" fill="#2dd4bf" style="--d:6"/><path class="s fl" stroke="#a3b6cf" stroke-opacity=".5" d="M300 110C330 90 350 70 372 40"/><rect class="po" x="290" y="50" width="14" height="300" rx="5" fill="#fb7185" style="--d:7"/><text class="po" x="297" y="385" text-anchor="middle" font-size="22" font-weight="600" fill="#fb7185" style="--d:9">ỷ lại</text></svg></div></section>
+
+<section class="slide" data-t="f"><div class="txt"><div class="tag it" style="--i:0">01 · Biểu hiện</div><h2 class="sp hl">Chờ lên lớp để sao chép bài của bạn</h2><p class="sub it" style="--i:8">Không tự tìm tòi, chép nguyên xi mà không hiểu bài.</p></div>
+<div class="art"><svg viewBox="0 0 400 400"><rect x="15" y="50" width="150" height="290" rx="14" class="s" stroke="#2dd4bf"/><rect x="235" y="50" width="150" height="290" rx="14" class="s" stroke="#fb7185"/>
+<g stroke="#2dd4bf" stroke-width="6" stroke-linecap="round"><path d="M40 105h100M40 145h100M40 185h70M40 225h100M40 265h80M40 305h100"/></g>
+<g stroke="#fb7185" stroke-width="6" stroke-linecap="round"><path class="gr" style="--d:0" d="M260 105h100"/><path class="gr" style="--d:1" d="M260 145h100"/><path class="gr" style="--d:2" d="M260 185h70"/><path class="gr" style="--d:3" d="M260 225h100"/><path class="gr" style="--d:4" d="M260 265h80"/><path class="gr" style="--d:5" d="M260 305h100"/></g>
+<path class="s fl" stroke="#fbbf24" d="M175 200H225"/><path class="s" stroke="#fbbf24" d="M215 188l12 12-12 12"/></svg></div></section>
+
+<section class="slide rev" data-t="c"><div class="txt"><div class="tag it" style="--i:0">01 · Biểu hiện</div><h2 class="sp hl">Phó mặc việc nhóm cho vài bạn tích cực</h2><p class="sub it" style="--i:8">Toàn bộ phần nội dung và khâu trình bày đều đổ lên nhóm trưởng hoặc một vài bạn tích cực.</p></div>
+<div class="art"><svg viewBox="0 0 400 400"><g class="press"><rect x="90" y="40" width="220" height="70" rx="14" fill="#fb7185"/><text x="200" y="85" text-anchor="middle" font-size="28" font-weight="800" fill="#081426">VIỆC NHÓM</text></g><use class="po" href="#pp" x="150" y="130" width="100" height="150" fill="#fbbf24" style="--d:0"/><use class="po" href="#pp" x="25" y="300" width="46" height="69" fill="#2dd4bf" opacity=".35" style="--d:2"/><use class="po" href="#pp" x="120" y="300" width="46" height="69" fill="#2dd4bf" opacity=".35" style="--d:3"/><use class="po" href="#pp" x="234" y="300" width="46" height="69" fill="#2dd4bf" opacity=".35" style="--d:4"/><use class="po" href="#pp" x="330" y="300" width="46" height="69" fill="#2dd4bf" opacity=".35" style="--d:5"/></svg></div></section>
+
+<section class="slide" data-t="z"><div class="txt"><div class="tag it" style="--i:0">01 · Biểu hiện</div><h2 class="sp hl">Gặp khó là buông xuôi, mong người thân gánh vác thay</h2><p class="sub it" style="--i:10">Nhờ vả cả những việc nằm trong khả năng của bản thân, thay vì tự thử sức trước.</p></div>
+<div class="art"><svg viewBox="0 0 400 400"><use class="po" href="#pp" x="30" y="220" width="70" height="105" fill="#2dd4bf" style="--d:0"/><use class="po" href="#pp" x="290" y="170" width="90" height="135" fill="#fbbf24" style="--d:1"/><path class="s fl" stroke="#a3b6cf" stroke-opacity=".5" d="M80 200Q200 60 320 150"/><circle class="mv" r="26" fill="#fb7185"><animateMotion dur="2.6s" begin="indefinite" fill="freeze" path="M80 200Q200 60 320 150"/></circle></svg></div></section>
+
+<section class="slide rev" data-t="b"><div class="txt"><div class="tag it" style="--i:0">02 · Hậu quả</div><h2 class="sp hl">Với bản thân: kiến thức hổng dần, mất tự tin</h2><p class="sub it" style="--i:9">Mất khả năng tự học và tư duy độc lập. Đến kì thi quan trọng, không ai bên cạnh thì lúng túng, hoảng sợ.</p></div>
+<div class="art"><svg viewBox="0 0 400 400"><g class="brk"></g></svg></div></section>
+
+<section class="slide" data-t="d"><div class="txt"><div class="tag it" style="--i:0">02 · Hậu quả</div><h2 class="sp hl">Với tập thể: bạn bè mệt mỏi, tình bạn rạn nứt</h2><p class="sub it" style="--i:9">Sự ỷ lại tạo gánh nặng và cảm giác bất công. Lớp mất dần tinh thần tự giác và thi đua lành mạnh.</p></div>
+<div class="art"><svg viewBox="0 0 400 400"><g class="lh"><use href="#pp" x="40" y="150" width="62" height="93" fill="#2dd4bf"/><path class="s" stroke="#2dd4bf" stroke-width="12" d="M115 200H200"/></g><g class="rh"><use href="#pp" x="298" y="150" width="62" height="93" fill="#fbbf24"/><path class="s" stroke="#fbbf24" stroke-width="12" d="M285 200H200"/></g><path class="s dr" style="--l:140;--d:3" stroke="#fb7185" d="M192 150l16 30-16 22 16 30 -8 30"/></svg></div></section>
+
+<section class="slide rev" data-t="r"><div class="txt"><div class="tag it" style="--i:0">02 · Hậu quả</div><h2 class="sp hl">Với xã hội: thế hệ trẻ phụ thuộc thành gánh nặng</h2><p class="sub it" style="--i:10">Thiếu ý chí tự lập thì khó đứng vững trong công việc và cuộc sống, vô tình thành gánh nặng cho gia đình và cộng đồng.</p></div>
+<div class="art"><svg viewBox="0 0 400 400"><circle class="po" cx="200" cy="200" r="180" fill="#fb7185" fill-opacity=".1" stroke="#fb7185" stroke-width="3" style="--d:4"/><circle class="po" cx="200" cy="200" r="125" fill="#fbbf24" fill-opacity=".14" stroke="#fbbf24" stroke-width="3" style="--d:2"/><circle class="po" cx="200" cy="200" r="70" fill="#2dd4bf" fill-opacity=".2" stroke="#2dd4bf" stroke-width="3" style="--d:0"/><circle cx="200" cy="200" r="20" fill="url(#gg)"/><g font-size="22" font-weight="600" text-anchor="middle" fill="#fff"><text class="po" x="200" y="128" style="--d:1">Bản thân</text><text class="po" x="200" y="73" style="--d:3">Tập thể</text><text class="po" x="200" y="18" style="--d:5">Xã hội</text></g><circle cx="200" cy="200" r="180" fill="none" stroke="#fb7185" class="pulse"/></svg></div></section>
+
+<section class="slide" data-t="z"><div class="txt"><div class="tag it" style="--i:0">03 · Lí do</div><h2 class="sp hl">Tuổi học sinh là giai đoạn đẹp nhất để tự lập</h2><p class="sub it" style="--i:9">Rèn luyện tính tự lập, khám phá năng lực bản thân và học cách chịu trách nhiệm với lựa chọn của mình.</p></div>
+<div class="art"><svg viewBox="0 0 400 400"><g class="sp3" style="transform-origin:320px 80px;animation-duration:14s"><circle cx="320" cy="80" r="34" fill="#fbbf24"/><g stroke="#fbbf24" stroke-width="5" stroke-linecap="round"><path d="M320 24v-14M320 150v-14M250 80h-14M404 80h-14M270 30l-10-10M380 140l-10-10M370 30l10-10M260 140l10-10" transform="translate(0 0)"/></g></g><path class="s" stroke="#a3b6cf" d="M40 340H360"/><path class="s dr" style="--l:200" stroke="#2dd4bf" d="M200 340C200 280 190 240 200 150"/><ellipse class="po" cx="165" cy="255" rx="22" ry="40" fill="#2dd4bf" transform="rotate(-50 165 255)" style="--d:3"/><ellipse class="po" cx="236" cy="210" rx="22" ry="40" fill="#2dd4bf" transform="rotate(50 236 210)" style="--d:4"/><ellipse class="po" cx="200" cy="125" rx="24" ry="42" fill="#fbbf24" style="--d:5"/></svg></div></section>
+
+<section class="slide rev" data-t="l"><div class="txt"><div class="tag it" style="--i:0">03 · Lí do</div><h2 class="sp hl">Tự lập không phải là sống tách biệt</h2><p class="sub it" style="--i:8">Mỗi người tự đứng trên đôi chân của mình, và biết hợp tác một cách công bằng, văn minh.</p></div>
+<div class="art"><svg viewBox="0 0 400 400"><circle class="ven1" cx="140" cy="200" r="115" fill="#2dd4bf" fill-opacity=".4" stroke="#2dd4bf" stroke-width="3"/><circle class="ven2" cx="260" cy="200" r="115" fill="#fbbf24" fill-opacity=".4" stroke="#fbbf24" stroke-width="3"/><g font-size="26" font-weight="800" text-anchor="middle" fill="#fff"><text class="po" x="90" y="208" style="--d:6">Mình</text><text class="po" x="310" y="208" style="--d:6">Bạn</text><text class="po" x="200" y="208" font-size="22" style="--d:8">Hợp tác</text></g></svg></div></section>
+
+<section class="slide col" data-t="u" data-b="4"><div class="tag it" style="--i:0">04 · Cách làm</div><h2 class="sp hl" style="font-size:72px">4 bước để từ bỏ ỷ lại</h2>
+<div class="cards">
+<div class="b" data-e="l"><svg viewBox="0 0 160 120"><g class="scan"><circle cx="55" cy="45" r="30" class="s" stroke="#2dd4bf"/><path class="s" stroke="#fbbf24" d="M78 68l26 26"/></g></svg><h3>1 · Nhận diện</h3><p>Thành thật hỏi: mình đang dựa vào ai, ở việc gì?</p></div>
+<div class="b" data-e="u"><svg viewBox="0 0 160 120"><circle cx="80" cy="64" r="44" class="s" stroke="#2dd4bf"/><path class="s" stroke="#fbbf24" d="M80 8v8M70 6h20"/><path class="s hand" stroke="#fb7185" d="M80 64V32"/></svg><h3>2 · Tự làm trước</h3><p>Dành 15–20 phút tự nghĩ, tìm tài liệu, làm bản nháp riêng.</p></div>
+<div class="b" data-e="r"><svg viewBox="0 0 160 120"><path class="s" stroke="#2dd4bf" d="M20 20h100a12 12 0 0 1 12 12v36a12 12 0 0 1-12 12H70l-22 20V80H20a12 12 0 0 1-12-12V32a12 12 0 0 1 12-12z"/><circle class="blink" cx="55" cy="50" r="6" fill="#fbbf24"/><circle class="blink" cx="75" cy="50" r="6" fill="#fbbf24"/><circle class="blink" cx="95" cy="50" r="6" fill="#fbbf24"/></svg><h3>3 · Nhờ đúng mức</h3><p>Hỏi điểm chưa hiểu, không nhờ làm thay. Nhận phần việc vừa sức, đúng hạn.</p></div>
+<div class="b" data-e="z"><svg viewBox="0 0 160 120"><g fill="#2dd4bf"><rect class="gw" x="20" y="80" width="26" height="30" rx="4"/><rect class="gw" x="58" y="58" width="26" height="52" rx="4"/><rect class="gw" x="96" y="36" width="26" height="74" rx="4" fill="#fbbf24"/></g><path class="s" stroke="#fb7185" d="M20 60L70 36l40-26"/></svg><h3>4 · Tự đánh giá</h3><p>Cuối tuần xem mình đã tự giải quyết được bao nhiêu việc.</p></div>
+</div></section>
+
+<section class="slide" data-t="f"><div class="txt"><div class="tag it" style="--i:0">05 · Phản hồi</div><h2 class="sp hl">Đa số ủng hộ, vài người sẽ băn khoăn</h2><p class="sub it" style="--i:8">Thầy cô, gia đình, bạn bè sẽ đồng tình, trân trọng và khích lệ. Có bạn ngại thay đổi vì sợ mất thời gian, hoặc lo từ chối giúp đỡ sẽ mất tình bạn.</p></div>
+<div class="art"><svg viewBox="0 0 400 400"><path class="s" stroke="#a3b6cf" d="M200 120V345M130 345H270"/><g class="beam"><path class="s" stroke="#fff" d="M60 120H340"/></g><circle cx="200" cy="120" r="10" fill="#fbbf24"/>
+<g transform="translate(62 120)"><g class="pl1"><path class="s" stroke="#a3b6cf" stroke-width="2" d="M0 0L-48 110M0 0L48 110"/><path d="M-60 110Q0 160 60 110z" fill="#2dd4bf"/><circle class="po" cx="-25" cy="95" r="14" fill="#fbbf24" style="--d:9"/><circle class="po" cx="0" cy="92" r="14" fill="#fbbf24" style="--d:10"/><circle class="po" cx="25" cy="95" r="14" fill="#fbbf24" style="--d:11"/><text y="195" text-anchor="middle" font-size="24" font-weight="600" fill="#2dd4bf">Ủng hộ</text></g></g>
+<g transform="translate(338 120)"><g class="pl2"><path class="s" stroke="#a3b6cf" stroke-width="2" d="M0 0L-48 110M0 0L48 110"/><path d="M-60 110Q0 160 60 110z" fill="#fb7185"/><circle class="po" cx="0" cy="95" r="12" fill="#fff" style="--d:9"/><text y="195" text-anchor="middle" font-size="24" font-weight="600" fill="#fb7185">Băn khoăn</text></g></g></svg></div></section>
+
+<section class="slide rev" data-t="l"><div class="txt"><div class="tag it" style="--i:0">05 · Phản hồi</div><h2 class="sp hl">Giữ thái độ cầu tiến, phân biệt rõ giúp đỡ và dựa dẫm</h2><p class="sub it" style="--i:10">Trao đổi thẳng thắn. Sự giúp đỡ, sẻ chia chân thành khác hẳn với sự dựa dẫm, đùn đẩy trách nhiệm.</p></div>
+<div class="art"><svg viewBox="0 0 400 400"><circle class="po" cx="100" cy="180" r="75" fill="#2dd4bf" fill-opacity=".18" stroke="#2dd4bf" stroke-width="4" style="--d:0"/><path class="s dr" style="--l:120;--d:2" stroke="#2dd4bf" stroke-width="9" d="M65 180l28 28 47-52"/><circle class="po" cx="300" cy="180" r="75" fill="#fb7185" fill-opacity=".18" stroke="#fb7185" stroke-width="4" style="--d:1"/><path class="s dr" style="--l:180;--d:3" stroke="#fb7185" stroke-width="9" d="M270 150l60 60M330 150l-60 60"/><text class="po" x="200" y="198" text-anchor="middle" font-size="56" font-weight="800" fill="#fbbf24" style="--d:5">≠</text><g font-size="24" font-weight="600" text-anchor="middle"><text class="po" x="100" y="300" fill="#2dd4bf" style="--d:6">Giúp đỡ, sẻ chia</text><text class="po" x="300" y="300" fill="#fb7185" style="--d:7">Dựa dẫm, đùn đẩy</text></g></svg></div></section>
+
+<section class="slide" data-t="c" id="s13"><div class="txt"><div class="tag it" style="--i:0">Kết luận</div><h2 class="sp hl">Mỗi bước tự lập hôm nay là món quà cho tương lai</h2><p class="sub it" style="--i:10">Làm chủ việc học, tự tin hơn, xây dựng tập thể đoàn kết, trách nhiệm và tích cực.</p></div>
+<div class="art"><svg viewBox="0 0 400 400"><g fill="url(#gg)"><rect class="st" style="--d:0" x="40" y="300" width="62" height="50" rx="5"/><rect class="st" style="--d:1" x="104" y="250" width="62" height="100" rx="5"/><rect class="st" style="--d:2" x="168" y="200" width="62" height="150" rx="5"/><rect class="st" style="--d:3" x="232" y="150" width="62" height="200" rx="5"/><rect class="st" style="--d:4" x="296" y="100" width="62" height="250" rx="5"/></g><path class="s" stroke="#fff" d="M327 100V45"/><path class="wave" d="M327 45l44 14-44 14z" fill="#fb7185"/><g class="mv"><g transform="translate(-14 -42)"><use href="#pp" width="28" height="42" fill="#081426" stroke="#fff" stroke-width="2"/></g><animateMotion dur="3.4s" begin="indefinite" fill="freeze" path="M71 300 L135 250 L199 200 L263 150 L327 100" keyTimes="0;1" calcMode="linear"/></g></svg></div></section>
+
+<section class="slide cen" data-t="b" id="s14"><svg class="rings" viewBox="0 0 400 400"><circle class="pulse" cx="200" cy="200" r="150" fill="none" stroke="#2dd4bf" stroke-width="2"/><circle class="pulse" cx="200" cy="200" r="150" fill="none" stroke="#fbbf24" stroke-width="2" style="animation-delay:.8s"/><circle class="pulse" cx="200" cy="200" r="150" fill="none" stroke="#fb7185" stroke-width="2" style="animation-delay:1.6s"/></svg><h1 class="sp hl">Cảm ơn các bạn đã lắng nghe!</h1><p class="sub it" style="--i:8;max-width:none;margin-top:40px">Hãy bắt đầu tự lập từ một việc nhỏ ngay hôm nay.</p></section>
+
+</div></div>
+<div id="bar"></div><div id="cnt"></div><button id="fsb" title="Toàn màn hình" aria-label="Toàn màn hình"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+
+<script>
+var PASS='36',pw=document.getElementById('pw'),err=document.getElementById('err'),box=document.getElementById('box'),gate=document.getElementById('gate'),
+stage=document.getElementById('stage'),deck=document.getElementById('deck'),slides=[].slice.call(document.querySelectorAll('.slide')),cur=-1,open=false;
+function fit(){var s=Math.min(innerWidth/1920,innerHeight/1080);stage.style.transform='translate(-50%,-50%) scale('+s+')'}
+fit();addEventListener('resize',fit);
+function splitWords(el){var n=0;(function w(node){[].slice.call(node.childNodes).forEach(function(c){
+ if(c.nodeType===3){var f=document.createDocumentFragment();c.textContent.split(/(\s+)/).forEach(function(p){if(!p)return;
+  if(/^\s+$/.test(p)){f.appendChild(document.createTextNode(' '));return}
+  var s=document.createElement('span');s.className='wd';s.style.setProperty('--d',n++);s.textContent=p;f.appendChild(s)});
+  c.parentNode.replaceChild(f,c)}else if(c.nodeType===1)w(c)})})(el)}
+document.querySelectorAll('.sp').forEach(splitWords);
+/* bricks */
+document.querySelectorAll('.brk').forEach(function(g){var h='';
+ for(var r=0;r<6;r++)for(var c=0;c<6;c++){var gone=Math.random()<.45,x=22+c*60,y=70+r*36;
+  h+='<rect x="'+x+'" y="'+y+'" width="54" height="30" rx="5" fill="'+(gone?'#fb7185':'#2dd4bf')+'" fill-opacity="'+(gone?1:.85)+'"'+(gone?' class="gone" style="--d:'+(Math.random()*8).toFixed(1)+';--r:'+Math.round(Math.random()*80-40)+'deg"':'')+'/>'}
+ g.innerHTML=h});
+/* canvas: particles + confetti */
+var cv=document.getElementById('fx'),cx=cv.getContext('2d'),P=[],conf=[];
+for(var k=0;k<55;k++)P.push({x:Math.random()*1920,y:Math.random()*1080,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,r:Math.random()*2+1});
+function burst(){var cols=['#2dd4bf','#fbbf24','#fb7185','#ffffff'];
+ for(var i=0;i<170;i++){var a=Math.random()*6.283,s=Math.random()*16+5;conf.push({x:960,y:620,vx:Math.cos(a)*s,vy:Math.sin(a)*s-9,w:Math.random()*14+6,c:cols[i%4],l:140+Math.random()*70,rot:Math.random()*6})}}
+(function loop(){cx.clearRect(0,0,1920,1080);
+ P.forEach(function(p,i){p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>1920)p.vx*=-1;if(p.y<0||p.y>1080)p.vy*=-1;
+  cx.fillStyle='rgba(45,212,191,.55)';cx.beginPath();cx.arc(p.x,p.y,p.r,0,6.283);cx.fill();
+  for(var j=i+1;j<P.length;j++){var q=P[j],d=Math.hypot(p.x-q.x,p.y-q.y);if(d<190){cx.strokeStyle='rgba(45,212,191,'+(.16*(1-d/190))+')';cx.beginPath();cx.moveTo(p.x,p.y);cx.lineTo(q.x,q.y);cx.stroke()}}});
+ conf=conf.filter(function(c){return --c.l>0});
+ conf.forEach(function(c){c.x+=c.vx;c.y+=c.vy;c.vy+=.3;c.vx*=.99;c.rot+=.2;cx.save();cx.globalAlpha=Math.min(1,c.l/40);cx.translate(c.x,c.y);cx.rotate(c.rot);cx.fillStyle=c.c;cx.fillRect(-c.w/2,-c.w/4,c.w,c.w/2);cx.restore()});
+ requestAnimationFrame(loop)})();
+/* navigation */
+function show(n,back){
+ if(n<0||n>=slides.length||n===cur)return;
+ var old=slides[cur];
+ if(old){old.classList.remove('on');old.classList.add('off');setTimeout(function(){old.classList.remove('off')},600)}
+ var s=slides[n];s.classList.remove('off');s.classList.add('on');cur=n;
+ [].forEach.call(s.querySelectorAll('.b'),function(b){b.classList.toggle('in',!!back)});
+ [].forEach.call(s.querySelectorAll('animateMotion'),function(a){try{a.beginElement()}catch(e){}});
+ document.getElementById('bar').style.width=((n+1)/slides.length*100)+'%';
+ document.getElementById('cnt').textContent=(n+1)+' / '+slides.length;
+ if(s.id==='s13')setTimeout(burst,3600);if(s.id==='s14')setTimeout(burst,1200);
+}
+function next(){
+ var s=slides[cur],pend=s.querySelectorAll('.b:not(.in)');
+ if(pend.length){pend[0].classList.add('in');return}
+ show(cur+1)}
+function prev(){
+ var s=slides[cur],ins=s.querySelectorAll('.b.in');
+ if(ins.length){ins[ins.length-1].classList.remove('in');return}
+ show(cur-1,true)}
+function unlock(){
+ if(pw.value.trim()===PASS){gate.classList.add('out');setTimeout(function(){gate.style.display='none'},800);
+  deck.style.display='block';document.getElementById('cnt').style.display='block';document.getElementById('fsb').style.display='block';open=true;show(0)}
+ else{err.textContent='Mật khẩu chưa đúng, thử lại nhé!';box.classList.remove('shake');void box.offsetWidth;box.classList.add('shake');pw.value='';pw.focus()}}
+document.getElementById('go').onclick=unlock;
+document.getElementById('fsb').onclick=function(){this.blur();if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen()};
+pw.addEventListener('keydown',function(e){if(e.key==='Enter')unlock()});
+document.addEventListener('click',function(e){if(open&&deck.contains(e.target))next()});
+document.addEventListener('keydown',function(e){
+ if(!open)return;
+ if(['ArrowRight','ArrowDown','PageDown',' ','Enter'].indexOf(e.key)>-1){e.preventDefault();next()}
+ else if(['ArrowLeft','ArrowUp','PageUp','Backspace'].indexOf(e.key)>-1){e.preventDefault();prev()}
+ else if(e.key==='Home')show(0,true);else if(e.key==='End')show(slides.length-1);
+ else if(e.key==='f'||e.key==='F'){if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen()}});
+</script>
+</body>
+</html>
